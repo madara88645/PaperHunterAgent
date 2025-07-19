@@ -35,8 +35,15 @@ class SummarizerAgent:
                 pdf_data = BytesIO(response.content)
             else:
                 # Open local PDF file
-                with open(pdf_url, "rb") as f:
-                    pdf_data = BytesIO(f.read())
+                try:
+                    with open(pdf_url, "rb") as f:
+                        pdf_data = BytesIO(f.read())
+                except FileNotFoundError:
+                    self.logger.error(f"File not found: {pdf_url}")
+                    return None
+                except PermissionError:
+                    self.logger.error(f"Permission denied when accessing file: {pdf_url}")
+                    return None
 
             # Try with pdfplumber first (better for layout)
             try:
