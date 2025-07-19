@@ -1,0 +1,17 @@
+2025-07-19 17:16:51,577 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Aquant-ph&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:52,136 - arxiv - INFO - Got first page: 100 of 164574 total results
+2025-07-19 17:16:52,138 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Ahep-th&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:52,533 - arxiv - INFO - Got first page: 100 of 175044 total results
+2025-07-19 17:16:52,535 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:53,861 - arxiv - INFO - Got first page: 100 of 14215 total results
+2025-07-19 17:16:53,863 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acs.QC&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:54,268 - arxiv - INFO - Got empty first page; stopping generation
+2025-07-19 17:16:54,268 - src.paper_hunter_agent - INFO - Expanding search window to ±7 days
+2025-07-19 17:16:54,268 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Aquant-ph&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:54,571 - arxiv - INFO - Got first page: 100 of 164574 total results
+2025-07-19 17:16:54,573 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Ahep-th&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:54,858 - arxiv - INFO - Got first page: 100 of 175044 total results
+2025-07-19 17:16:54,860 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acond-mat&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:55,143 - arxiv - INFO - Got first page: 100 of 14215 total results
+2025-07-19 17:16:55,146 - arxiv - INFO - Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=cat%3Acs.QC&id_list=&sortBy=submittedDate&sortOrder=descending&start=0&max_results=100
+2025-07-19 17:16:55,323 - arxiv - INFO - Got empty first page; stopping generation
