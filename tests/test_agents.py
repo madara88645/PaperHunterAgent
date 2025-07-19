@@ -42,9 +42,11 @@ class TestPaperHunterAgent(unittest.TestCase):
         mock_paper.published.replace.return_value = Mock()
 
         # Mock datetime
-        with patch("src.paper_hunter_agent.datetime") as mock_datetime:
-            mock_datetime.now.return_value = Mock()
-            mock_datetime.now.return_value.__sub__.return_value.days = 1
+        with patch("paper_hunter_agent.datetime") as mock_datetime:
+            # Create a mock timedelta with days attribute
+            mock_timedelta = Mock()
+            mock_timedelta.days = 1
+            mock_datetime.now.return_value.__sub__.return_value = mock_timedelta
 
             score = self.agent._calculate_relevance_score(mock_paper)
             self.assertGreaterEqual(score, 50)
