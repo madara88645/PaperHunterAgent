@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+import datetime
 from unittest.mock import Mock, patch
 
 # Add src directory to path
@@ -43,8 +44,9 @@ class TestPaperHunterAgent(unittest.TestCase):
 
         # Mock datetime
         with patch("src.paper_hunter_agent.datetime") as mock_datetime:
-            mock_datetime.now.return_value = Mock()
-            mock_datetime.now.return_value.__sub__.return_value.days = 1
+            now = datetime.datetime(2024, 1, 2)
+            mock_datetime.now.return_value = now
+            mock_paper.published.replace.return_value = now - datetime.timedelta(days=1)
 
             score = self.agent._calculate_relevance_score(mock_paper)
             self.assertGreaterEqual(score, 50)

@@ -4,9 +4,20 @@ import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
-import arxiv
-import requests
-from dotenv import load_dotenv
+try:
+    import arxiv
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    arxiv = None
+
+try:
+    import requests
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    requests = None
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    def load_dotenv(*args, **kwargs):
+        return False
 
 
 class PaperHunterAgent:
@@ -35,6 +46,10 @@ class PaperHunterAgent:
         Returns:
             List of paper dictionaries
         """
+        if arxiv is None:
+            self.logger.error("arxiv package not available")
+            return []
+
         papers = []
         cutoff_date = datetime.now() - timedelta(days=days_back)
 
@@ -251,7 +266,10 @@ class PaperHunterAgent:
                 score += 20
 
         # Boost for recent publication
-        days_old = (datetime.now() - paper.published.replace(tzinfo=None)).days
+        try:
+            days_old = (datetime.now() - paper.published.replace(tzinfo=None)).days
+        except (AttributeError, TypeError):
+            days_old = 0
         if days_old < 7:
             score += 20
         elif days_old < 30:
