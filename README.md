@@ -37,6 +37,7 @@ A sophisticated multi-agent system designed to hunt, analyze, and map quantum sc
 ### Prerequisites
 ```bash
 pip install -r requirements.txt
+cp .env.example .env  # add your Semantic Scholar API key
 ```
 
 ### Basic Usage
@@ -68,6 +69,10 @@ if papers:
 ### Run Demo
 ```bash
 python main.py
+
+# Run in Docker
+docker build -t paperhunter .
+docker run --rm -it --env-file .env paperhunter
 ```
 
 ## 📋 Output Formats
@@ -224,6 +229,11 @@ Logs are saved to `quantum_research.log` and include:
 3. Add tests for new functionality
 4. Follow the existing code style
 5. Submit a pull request
+
+## 📑 Citation
+
+If you use this project in your research, please cite it using the information
+provided in `CITATION.cff`.
 
 ## 📝 License
 

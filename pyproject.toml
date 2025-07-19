@@ -1,0 +1,20 @@
+[project]
+name = "paperhunteragent"
+version = "0.1.0"
+description = "Multi-agent system to hunt and summarize quantum research papers"
+authors = [{name = "Jane Doe", email = "jane@example.com"}]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[project.urls]
+Homepage = "https://github.com/example/PaperHunterAgent"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 88
