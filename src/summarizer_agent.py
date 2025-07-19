@@ -19,22 +19,35 @@ class SummarizerAgent:
         
     def extract_pdf_text(self, pdf_url: str) -> Optional[str]:
         """
-        Extract text from PDF URL.
-        
+        Extract text from a PDF URL or local file path.
+
         Args:
-            pdf_url: URL to the PDF file
-            
+            pdf_url: URL or local path to the PDF file
+
         Returns:
             Extracted text or None if failed
         """
         try:
-            # Download PDF
-            response = requests.get(pdf_url, timeout=30)
-            response.raise_for_status()
-            
+            if pdf_url.startswith(("http://", "https://")):
+                # Download PDF from remote location
+                response = requests.get(pdf_url, timeout=30)
+                response.raise_for_status()
+                pdf_data = BytesIO(response.content)
+            else:
+                # Open local PDF file
+                try:
+                    with open(pdf_url, "rb") as f:
+                        pdf_data = BytesIO(f.read())
+                except FileNotFoundError:
+                    self.logger.error(f"File not found: {pdf_url}")
+                    return None
+                except PermissionError:
+                    self.logger.error(f"Permission denied when accessing file: {pdf_url}")
+                    return None
+
             # Try with pdfplumber first (better for layout)
             try:
-                with pdfplumber.open(BytesIO(response.content)) as pdf:
+                with pdfplumber.open(pdf_data) as pdf:
                     text = ""
                     for page in pdf.pages:
                         page_text = page.extract_text()
@@ -44,7 +57,8 @@ class SummarizerAgent:
             except Exception:
                 # Fallback to PyPDF2
                 try:
-                    pdf_reader = PyPDF2.PdfReader(BytesIO(response.content))
+                    pdf_data.seek(0)
+                    pdf_reader = PyPDF2.PdfReader(pdf_data)
                     text = ""
                     for page in pdf_reader.pages:
                         text += page.extract_text() + "\n"
@@ -52,7 +66,7 @@ class SummarizerAgent:
                 except Exception as e:
                     self.logger.error(f"Failed to extract PDF text: {e}")
                     return None
-                    
+
         except Exception as e:
             self.logger.error(f"Failed to download or process PDF from {pdf_url}: {e}")
             return None

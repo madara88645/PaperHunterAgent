@@ -17,7 +17,7 @@ A sophisticated multi-agent system designed to hunt, analyze, and map quantum sc
 **Mission:** Create concise but information-dense summaries of quantum science papers.
 
 **Features:**
-- PDF text extraction and processing
+- PDF text extraction and processing (from URL or local file)
 - LaTeX equation identification
 - Technical term glossary generation
 - Structured Markdown output format
