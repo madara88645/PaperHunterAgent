@@ -43,7 +43,7 @@ class TestPaperHunterAgent(unittest.TestCase):
         mock_paper.published.replace.return_value = Mock()
         
         # Mock datetime
-        with patch('src.paper_hunter_agent.datetime') as mock_datetime:
+        with patch('paper_hunter_agent.datetime') as mock_datetime:
             mock_datetime.now.return_value = Mock()
             mock_datetime.now.return_value.__sub__.return_value.days = 1
             
