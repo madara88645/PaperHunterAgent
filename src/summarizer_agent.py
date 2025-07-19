@@ -74,8 +74,8 @@ class SummarizerAgent:
                                 text += page_text + "\n"
                         if text.strip():
                             return text
-                except Exception:
-                    pass
+                except Exception as e:
+                    self.logger.error(f"Failed to extract text using pdfplumber: {e}")
 
             # Fallback to PyPDF2
             if PyPDF2 is not None:
