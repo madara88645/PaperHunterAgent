@@ -268,7 +268,7 @@ class PaperHunterAgent:
         # Boost for recent publication
         try:
             days_old = (datetime.now() - paper.published.replace(tzinfo=None)).days
-        except Exception:
+        except (AttributeError, TypeError):
             days_old = 0
         if days_old < 7:
             score += 20
