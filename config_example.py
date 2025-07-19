@@ -5,7 +5,7 @@
 USER_KEYWORDS = [
     "quantum error correction",
     "surface code",
-    "logical qubit", 
+    "logical qubit",
     "quantum computing",
     "decoherence",
     "entanglement",
@@ -17,7 +17,7 @@ USER_KEYWORDS = [
     "quantum cryptography",
     "quantum communication",
     "quantum sensing",
-    "quantum metrology"
+    "quantum metrology",
 ]
 
 # Search configuration
@@ -26,22 +26,22 @@ SEARCH_CONFIG = {
     "initial_days_back": 1,
     "expanded_days_back": 14,
     "semantic_scholar_days_back": 10,
-    "min_papers_threshold": 3
+    "min_papers_threshold": 3,
 }
 
 # arXiv categories to search
 ARXIV_CATEGORIES = [
-    "quant-ph",    # Quantum Physics
-    "hep-th",      # High Energy Physics - Theory
-    "cond-mat",    # Condensed Matter
-    "cs.QC"        # Computer Science - Quantum Computing
+    "quant-ph",  # Quantum Physics
+    "hep-th",  # High Energy Physics - Theory
+    "cond-mat",  # Condensed Matter
+    "cs.QC",  # Computer Science - Quantum Computing
 ]
 
 # Filtering rules
 FILTER_CONFIG = {
     "min_abstract_words": 150,  # Rough estimate for 6+ pages
     "languages": ["english"],
-    "exclude_preprints": False
+    "exclude_preprints": False,
 }
 
 # Output configuration
@@ -50,7 +50,7 @@ OUTPUT_CONFIG = {
     "log_level": "INFO",
     "json_indent": 2,
     "max_concept_map_nodes": 20,
-    "max_concept_map_edges": 30
+    "max_concept_map_edges": 30,
 }
 
 # API configuration
@@ -58,5 +58,5 @@ API_CONFIG = {
     "arxiv_max_results_per_category": 50,
     "semantic_scholar_base_url": "https://api.semanticscholar.org/graph/v1",
     "pdf_download_timeout": 30,
-    "request_delay": 1.0  # Seconds between API requests
+    "request_delay": 1.0,  # Seconds between API requests
 }
