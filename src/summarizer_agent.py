@@ -3,9 +3,20 @@ import re
 from io import BytesIO
 from typing import Any, Dict, List, Optional
 
-import pdfplumber
-import PyPDF2
-import requests
+try:
+    import pdfplumber
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    pdfplumber = None
+
+try:
+    import PyPDF2
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    PyPDF2 = None
+
+try:
+    import requests
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    requests = None
 
 
 class SummarizerAgent:
@@ -28,6 +39,10 @@ class SummarizerAgent:
         Returns:
             Extracted text or None if failed
         """
+        if requests is None or (pdfplumber is None and PyPDF2 is None):
+            self.logger.error("PDF processing dependencies not available")
+            return None
+
         try:
             if pdf_url.startswith(("http://", "https://")):
                 # Download PDF from remote location
@@ -48,27 +63,34 @@ class SummarizerAgent:
                     )
                     return None
 
-            # Try with pdfplumber first (better for layout)
-            try:
-                with pdfplumber.open(pdf_data) as pdf:
-                    text = ""
-                    for page in pdf.pages:
-                        page_text = page.extract_text()
-                        if page_text:
-                            text += page_text + "\n"
-                    return text if text.strip() else None
-            except Exception:
-                # Fallback to PyPDF2
+            # Try with pdfplumber first if available
+            if pdfplumber is not None:
+                try:
+                    with pdfplumber.open(pdf_data) as pdf:
+                        text = ""
+                        for page in pdf.pages:
+                            page_text = page.extract_text()
+                            if page_text:
+                                text += page_text + "\n"
+                        if text.strip():
+                            return text
+                except Exception:
+                    pass
+
+            # Fallback to PyPDF2
+            if PyPDF2 is not None:
                 try:
                     pdf_data.seek(0)
                     pdf_reader = PyPDF2.PdfReader(pdf_data)
                     text = ""
                     for page in pdf_reader.pages:
                         text += page.extract_text() + "\n"
-                    return text if text.strip() else None
+                    if text.strip():
+                        return text
                 except Exception as e:
                     self.logger.error(f"Failed to extract PDF text: {e}")
-                    return None
+
+            return None
 
         except Exception as e:
             self.logger.error(f"Failed to download or process PDF from {pdf_url}: {e}")
