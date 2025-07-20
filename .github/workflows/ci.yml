@@ -14,4 +14,4 @@ jobs:
       - run: ruff check .
       - run: black --check .
       - run: isort --check-only .
-      - run: pytest
+      - run: PYTHONPATH=src pytest
