@@ -4,6 +4,7 @@ QuantumResearchChain - PaperHunterAgent System
 Main application entry point for the quantum research paper analysis system.
 """
 
+import argparse
 import json
 import logging
 import sys
@@ -25,22 +26,23 @@ def setup_logging():
     )
 
 
-def main():
+def main(user_keywords=None, max_papers=10):
     """Main application function."""
     setup_logging()
     logger = logging.getLogger(__name__)
 
-    # Example user keywords - you can modify these
-    user_keywords = [
-        "quantum error correction",
-        "surface code",
-        "logical qubit",
-        "quantum computing",
-        "decoherence",
-        "entanglement",
-        "quantum algorithm",
-        "quantum machine learning",
-    ]
+    if not user_keywords:
+        # Default keywords if none supplied via CLI
+        user_keywords = [
+            "quantum error correction",
+            "surface code",
+            "logical qubit",
+            "quantum computing",
+            "decoherence",
+            "entanglement",
+            "quantum algorithm",
+            "quantum machine learning",
+        ]
 
     try:
         # Initialize agents
@@ -51,7 +53,7 @@ def main():
 
         # Step 1: Hunt for papers
         logger.info("Hunting for quantum papers...")
-        papers_json = paper_hunter.hunt_papers(max_papers=10)
+        papers_json = paper_hunter.hunt_papers(max_papers=max_papers)
         papers = json.loads(papers_json)
 
         if not papers:
@@ -173,8 +175,30 @@ This work presents a comprehensive study of quantum error correction using surfa
 
 
 if __name__ == "__main__":
-    # Uncomment the line below to run the full pipeline (requires internet and valid arXiv papers)
-    # main()
+    parser = argparse.ArgumentParser(
+        description="QuantumResearchChain – hunt, summarize, and map quantum papers."
+    )
+    parser.add_argument(
+        "--keywords",
+        nargs="+",
+        metavar="KEYWORD",
+        help="One or more keywords to filter papers (default: built-in quantum set)",
+    )
+    parser.add_argument(
+        "--max-papers",
+        type=int,
+        default=10,
+        metavar="N",
+        help="Maximum number of papers to return (default: 10)",
+    )
+    parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Run the offline demo with sample data instead of the live pipeline",
+    )
+    args = parser.parse_args()
 
-    # Run demo with sample data
-    demo_individual_agents()
+    if args.demo:
+        demo_individual_agents()
+    else:
+        main(user_keywords=args.keywords, max_papers=args.max_papers)

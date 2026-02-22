@@ -80,7 +80,38 @@ class TestSummarizerAgent(unittest.TestCase):
         topic = self.agent.identify_primary_topic(title, abstract)
         self.assertEqual(topic, "Quantum Error Correction")
 
-    def test_generate_tldr(self):
+    def test_create_summary_falls_back_to_abstract(self):
+        """When PDF extraction fails, the summary is built from the abstract."""
+        paper = {
+            "title": "Quantum Error Correction with Surface Codes",
+            "authors": ["Alice Quantum", "Bob Physicist"],
+            "published": "2024-01-15",
+            "url_pdf": "https://example.com/nonexistent.pdf",
+            "abstract": (
+                "We present a comprehensive study of quantum error correction "
+                "using surface codes with improved error thresholds."
+            ),
+        }
+        with patch.object(self.agent, "extract_pdf_text", return_value=None):
+            summary = self.agent.create_summary(paper)
+        # Should produce a real summary, not the error sentinel
+        self.assertNotEqual(summary, "⚠️ Unable to parse PDF")
+        self.assertIn("Quantum Error Correction with Surface Codes", summary)
+        self.assertIn("TL;DR", summary)
+
+    def test_create_summary_returns_error_when_no_text_at_all(self):
+        """Returns error sentinel when both PDF and abstract are unavailable."""
+        paper = {
+            "title": "Empty Paper",
+            "authors": [],
+            "published": "2024-01-01",
+            "url_pdf": "",
+            "abstract": "",
+        }
+        with patch.object(self.agent, "extract_pdf_text", return_value=None):
+            summary = self.agent.create_summary(paper)
+        self.assertEqual(summary, "⚠️ Unable to parse PDF")
+
         """Test TL;DR generation."""
         abstract = (
             "This paper presents a novel approach to quantum error correction using surface codes. "

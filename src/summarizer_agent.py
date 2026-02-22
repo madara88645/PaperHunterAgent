@@ -305,11 +305,17 @@ class SummarizerAgent:
             Markdown formatted summary
         """
         try:
-            # Extract PDF text
-            pdf_text = self.extract_pdf_text(paper_data["url_pdf"])
+            # Extract PDF text; fall back to abstract when PDF is unavailable
+            pdf_text = self.extract_pdf_text(paper_data.get("url_pdf", ""))
 
             if not pdf_text:
-                return "⚠️ Unable to parse PDF"
+                abstract = paper_data.get("abstract", "")
+                if not abstract:
+                    return "⚠️ Unable to parse PDF"
+                self.logger.warning(
+                    "PDF extraction failed; using abstract as fallback text"
+                )
+                pdf_text = abstract
 
             # Extract components
             equations = self.extract_equations(pdf_text)
