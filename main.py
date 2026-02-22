@@ -8,7 +8,6 @@ import argparse
 import json
 import logging
 import sys
-from pathlib import Path
 
 from src.concept_map_agent import ConceptMapAgent
 from src.paper_hunter_agent import PaperHunterAgent
@@ -106,19 +105,28 @@ def demo_individual_agents():
     print("QUANTUM RESEARCH CHAIN - AGENT DEMONSTRATION")
     print("=" * 80)
 
-    # Demo PaperHunterAgent (offline fixture payload)
+    # Demo PaperHunterAgent
     print("\n1. PAPER HUNTER AGENT DEMO")
     print("-" * 40)
 
-    fixture_path = Path("fixtures/demo_papers.json")
-    papers_json = fixture_path.read_text(encoding="utf-8")
+    keywords = ["quantum error correction", "surface code"]
+    hunter = PaperHunterAgent(user_keywords=keywords)
+
+    # This will actually search arXiv - might take a moment
+    papers_json = hunter.hunt_papers(max_papers=3)
     print(papers_json)
 
     # Demo SummarizerAgent with sample data
     print("\n2. SUMMARIZER AGENT DEMO")
     print("-" * 40)
 
-    sample_paper = json.loads(papers_json)[0]
+    sample_paper = {
+        "title": "Quantum Error Correction with Surface Codes",
+        "authors": ["Alice Quantum", "Bob Physicist"],
+        "published": "2024-01-15",
+        "url_pdf": "https://arxiv.org/pdf/2401.00001.pdf",  # This is a placeholder
+        "abstract": "We present a comprehensive study of quantum error correction using surface codes. Our approach demonstrates improved error thresholds and practical implementation strategies for near-term quantum computers.",
+    }
 
     summarizer = SummarizerAgent()
     summary = summarizer.create_summary(sample_paper)

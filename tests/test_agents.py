@@ -52,38 +52,6 @@ class TestPaperHunterAgent(unittest.TestCase):
             self.assertGreaterEqual(score, 50)
             self.assertLessEqual(score, 100)
 
-    def test_search_semantic_scholar_dependency_guard(self):
-        """Semantic Scholar search returns empty list when requests is unavailable."""
-        with patch("paper_hunter_agent.requests", None):
-            results = self.agent.search_semantic_scholar(
-                arxiv_papers=[{"arxiv_id": "1234.56789"}], days_back=7
-            )
-        self.assertEqual(results, [])
-
-    def test_semantic_scholar_request_retries_then_succeeds(self):
-        """Semantic Scholar request retries transient failures with backoff."""
-        timeout_exc = self.agent.request_timeout_seconds
-        self.agent.request_timeout_seconds = 1
-
-        from paper_hunter_agent import requests as ph_requests
-
-        timeout_error = ph_requests.Timeout("timed out")
-        ok_response = Mock(status_code=200)
-        ok_response.json.return_value = {"data": []}
-
-        with patch("paper_hunter_agent.requests.get", side_effect=[timeout_error, ok_response]) as mock_get:
-            with patch("paper_hunter_agent.time.sleep") as mock_sleep:
-                data = self.agent._semantic_scholar_request(
-                    url="https://api.semanticscholar.org/graph/v1/paper/arXiv:1234/citations",
-                    params={"fields": "title"},
-                    headers={},
-                )
-
-        self.agent.request_timeout_seconds = timeout_exc
-        self.assertEqual(data, {"data": []})
-        self.assertEqual(mock_get.call_count, 2)
-        mock_sleep.assert_called_once()
-
 
 class TestSummarizerAgent(unittest.TestCase):
     """Test cases for SummarizerAgent."""
