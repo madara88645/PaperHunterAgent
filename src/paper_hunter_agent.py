@@ -16,6 +16,7 @@ except ModuleNotFoundError:  # pragma: no cover - optional dependency
 try:
     from dotenv import load_dotenv
 except ModuleNotFoundError:  # pragma: no cover - optional dependency
+
     def load_dotenv(*args, **kwargs):
         return False
 
