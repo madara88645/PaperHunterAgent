@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Offline Demo: Surface-Code Logical Qubits with Biased Noise",
+    "authors": ["A. Demo", "B. Researcher"],
+    "arxiv_id": "2401.00001",
+    "doi": "10.1000/offline.demo.1",
+    "published": "2024-01-15",
+    "url_pdf": "fixtures/sample_paper_1.pdf",
+    "abstract": "We study quantum error correction in surface codes under biased noise and show improved logical error suppression using tailored decoding.",
+    "relevance_score": 93
+  },
+  {
+    "title": "Offline Demo: Fault-Tolerant Syndrome Extraction on NISQ Hardware",
+    "authors": ["C. Analyst", "D. Physicist"],
+    "arxiv_id": "2401.00002",
+    "doi": "10.1000/offline.demo.2",
+    "published": "2024-01-21",
+    "url_pdf": "fixtures/sample_paper_2.pdf",
+    "abstract": "This fixture paper evaluates hardware-efficient syndrome extraction routines and quantifies fidelity tradeoffs for near-term devices.",
+    "relevance_score": 88
+  },
+  {
+    "title": "Offline Demo: Decoder Benchmarks for Quantum Error Correction",
+    "authors": ["E. Engineer"],
+    "arxiv_id": "2401.00003",
+    "doi": "10.1000/offline.demo.3",
+    "published": "2024-01-24",
+    "url_pdf": "fixtures/sample_paper_3.pdf",
+    "abstract": "We benchmark matching-based and neural decoders on synthetic syndrome datasets and report practical deployment recommendations.",
+    "relevance_score": 84
+  }
+]
