@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import time
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
@@ -37,81 +36,6 @@ class PaperHunterAgent:
         self.semantic_scholar_base_url = "https://api.semanticscholar.org/graph/v1"
         self.api_key = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
         self.logger = logging.getLogger(__name__)
-        self.request_timeout_seconds = 15
-        self.request_max_retries = 3
-        self.request_backoff_seconds = 1
-
-    def _ensure_dependency(self, dependency: Any, package_name: str) -> bool:
-        """Return True when dependency is available, else log a clear error."""
-        if dependency is None:
-            self.logger.error(
-                "Missing dependency '%s'. Install it to enable this network path.",
-                package_name,
-            )
-            return False
-        return True
-
-    def _semantic_scholar_request(
-        self, url: str, params: Dict[str, Any], headers: Dict[str, str]
-    ) -> Dict[str, Any]:
-        """Request Semantic Scholar with timeout/retry/backoff and clear error taxonomy."""
-        if not self._ensure_dependency(requests, "requests"):
-            return {}
-
-        for attempt in range(1, self.request_max_retries + 1):
-            try:
-                response = requests.get(
-                    url,
-                    params=params,
-                    headers=headers,
-                    timeout=self.request_timeout_seconds,
-                )
-
-                if response.status_code == 200:
-                    return response.json()
-
-                if response.status_code == 429:
-                    self.logger.warning(
-                        "Semantic Scholar rate limited request (HTTP 429) on attempt %s/%s",
-                        attempt,
-                        self.request_max_retries,
-                    )
-                elif 500 <= response.status_code < 600:
-                    self.logger.warning(
-                        "Semantic Scholar upstream error (HTTP %s) on attempt %s/%s",
-                        response.status_code,
-                        attempt,
-                        self.request_max_retries,
-                    )
-                else:
-                    self.logger.error(
-                        "Semantic Scholar request failed with non-retriable status HTTP %s",
-                        response.status_code,
-                    )
-                    return {}
-
-            except requests.Timeout:
-                self.logger.warning(
-                    "Semantic Scholar timeout on attempt %s/%s",
-                    attempt,
-                    self.request_max_retries,
-                )
-            except requests.RequestException as e:
-                self.logger.warning(
-                    "Semantic Scholar network error on attempt %s/%s: %s",
-                    attempt,
-                    self.request_max_retries,
-                    e,
-                )
-
-            if attempt < self.request_max_retries:
-                sleep_seconds = self.request_backoff_seconds * (2 ** (attempt - 1))
-                time.sleep(sleep_seconds)
-
-        self.logger.error(
-            "Semantic Scholar request exhausted retries (taxonomy: network_or_service_unavailable)"
-        )
-        return {}
 
     def search_arxiv_papers(self, days_back: int = 1) -> List[Dict[str, Any]]:
         """
@@ -123,7 +47,8 @@ class PaperHunterAgent:
         Returns:
             List of paper dictionaries
         """
-        if not self._ensure_dependency(arxiv, "arxiv"):
+        if arxiv is None:
+            self.logger.error("arxiv package not available")
             return []
 
         papers = []
@@ -188,9 +113,6 @@ class PaperHunterAgent:
         additional_papers = []
         cutoff_date = datetime.now() - timedelta(days=days_back)
 
-        if not self._ensure_dependency(requests, "requests"):
-            return additional_papers
-
         for arxiv_paper in arxiv_papers:
             try:
                 # Search for papers citing this arXiv paper
@@ -203,45 +125,47 @@ class PaperHunterAgent:
                 if self.api_key:
                     headers["x-api-key"] = self.api_key
 
-                data = self._semantic_scholar_request(
-                    url=url,
-                    params={
-                        "fields": "title,authors,year,url,abstract,citationCount,doi"
-                    },
+                response = requests.get(
+                    url,
+                    params={"fields": "title,authors,year,url,abstract,citationCount"},
                     headers=headers,
                 )
 
-                for citation in data.get("data", []):
-                    paper = citation.get("citingPaper", {})
+                if response.status_code == 200:
+                    data = response.json()
+                    for citation in data.get("data", []):
+                        paper = citation.get("citingPaper", {})
 
-                    # Basic filtering
-                    if not paper.get("title") or not paper.get("abstract"):
-                        continue
+                        # Basic filtering
+                        if not paper.get("title") or not paper.get("abstract"):
+                            continue
 
-                    # Check if recent enough (approximate)
-                    if paper.get("year") and paper["year"] < cutoff_date.year:
-                        continue
+                        # Check if recent enough (approximate)
+                        if paper.get("year") and paper["year"] < cutoff_date.year:
+                            continue
 
-                    # Check if matches keywords
-                    if not self._matches_keywords_text(
-                        paper.get("title", "") + " " + paper.get("abstract", "")
-                    ):
-                        continue
+                        # Check if matches keywords
+                        if not self._matches_keywords_text(
+                            paper.get("title", "") + " " + paper.get("abstract", "")
+                        ):
+                            continue
 
-                    paper_data = {
-                        "title": paper["title"],
-                        "authors": [
-                            author.get("name", "Unknown")
-                            for author in paper.get("authors", [])
-                        ],
-                        "arxiv_id": None,
-                        "doi": paper.get("doi"),
-                        "published": f"{paper.get('year', 'Unknown')}-01-01",  # Approximate
-                        "url_pdf": paper.get("url"),
-                        "abstract": paper.get("abstract", ""),
-                        "relevance_score": min(paper.get("citationCount", 0) * 5, 100),
-                    }
-                    additional_papers.append(paper_data)
+                        paper_data = {
+                            "title": paper["title"],
+                            "authors": [
+                                author.get("name", "Unknown")
+                                for author in paper.get("authors", [])
+                            ],
+                            "arxiv_id": None,
+                            "doi": paper.get("doi"),
+                            "published": f"{paper.get('year', 'Unknown')}-01-01",  # Approximate
+                            "url_pdf": paper.get("url"),
+                            "abstract": paper.get("abstract", ""),
+                            "relevance_score": min(
+                                paper.get("citationCount", 0) * 5, 100
+                            ),
+                        }
+                        additional_papers.append(paper_data)
 
             except Exception as e:
                 self.logger.error(
