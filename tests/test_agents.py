@@ -2,6 +2,7 @@ import datetime
 import os
 import sys
 import unittest
+from io import BytesIO
 from unittest.mock import Mock, patch
 
 # Add src directory to path
@@ -112,7 +113,8 @@ class TestSummarizerAgent(unittest.TestCase):
             summary = self.agent.create_summary(paper)
         self.assertEqual(summary, "⚠️ Unable to parse PDF")
 
-        """Test TL;DR generation."""
+    def test_generate_tldr_caps_output_to_120_words(self):
+        """Test TL;DR generation word limit."""
         abstract = (
             "This paper presents a novel approach to quantum error correction using surface codes. "
             * 20
@@ -122,6 +124,46 @@ class TestSummarizerAgent(unittest.TestCase):
         tldr = self.agent.generate_tldr(abstract, full_text)
         word_count = len(tldr.split())
         self.assertLessEqual(word_count, 120)
+
+    def test_extract_pdf_text_supports_local_file_upload(self):
+        """Local PDF paths should be read and passed to the parser."""
+        fake_pdf_bytes = b"%PDF-1.4 mock-pdf"
+        fake_page = Mock()
+        fake_page.extract_text.return_value = "Local upload paper content"
+        fake_pdf = Mock()
+        fake_pdf.pages = [fake_page]
+
+        with (
+            patch("builtins.open", return_value=BytesIO(fake_pdf_bytes)),
+            patch("summarizer_agent.pdfplumber") as mock_pdfplumber,
+        ):
+            mock_pdfplumber.open.return_value.__enter__.return_value = fake_pdf
+            text = self.agent.extract_pdf_text("/tmp/uploaded-paper.pdf")
+
+        self.assertIn("Local upload paper content", text)
+
+    def test_create_summary_output_quality_structure(self):
+        """Summary output should include all expected high-value sections."""
+        paper = {
+            "title": "Quantum Fault Tolerance by Design",
+            "authors": ["Alice Quantum", "Bob Physicist"],
+            "published": "2025-01-01",
+            "url_pdf": "/tmp/uploaded-paper.pdf",
+            "abstract": "We introduce a robust framework for fault-tolerant quantum computation.",
+        }
+        extracted_text = (
+            "We propose a new syndrome decoding method. "
+            "The contribution is improved logical error suppression. "
+            "Qubit is a two-level quantum system."
+        )
+
+        with patch.object(self.agent, "extract_pdf_text", return_value=extracted_text):
+            summary = self.agent.create_summary(paper)
+
+        self.assertIn("## TL;DR (≤ 120 words)", summary)
+        self.assertIn("## Main Contributions", summary)
+        self.assertIn("## Critical Assessment", summary)
+        self.assertIn("## Glossary", summary)
 
 
 class TestConceptMapAgent(unittest.TestCase):
