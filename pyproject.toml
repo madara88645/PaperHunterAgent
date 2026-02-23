@@ -1,14 +1,40 @@
 [project]
-name = "paperhunteragent"
+name = "paperhunter-agent"
 version = "0.1.0"
-description = "Multi-agent system to hunt and summarize quantum research papers"
+description = "Multi-agent system to hunt, summarize, and map quantum research papers"
 authors = [{name = "Jane Doe", email = "jane@example.com"}]
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
+keywords = ["quantum computing", "arxiv", "research", "multi-agent", "nlp", "paper discovery"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "requests>=2.31.0",
+    "arxiv>=2.1.0",
+    "PyPDF2>=3.0.1",
+    "pdfplumber>=0.10.0",
+    "python-dateutil>=2.8.2",
+    "beautifulsoup4>=4.12.2",
+    "lxml>=4.9.3",
+    "python-dotenv>=1.0.1",
+]
+
+[project.scripts]
+paperhunter = "src.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/example/PaperHunterAgent"
+Homepage = "https://github.com/madara88645/PaperHunterAgent"
+"Bug Tracker" = "https://github.com/madara88645/PaperHunterAgent/issues"
 
 [tool.black]
 line-length = 88
