@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.cli import (
     _parse_keywords,
+    _summarize_empty_state_message,
     build_parser,
     cmd_full_run,
     cmd_hunt,
@@ -57,6 +58,14 @@ class TestParseKeywords(unittest.TestCase):
 
     def test_empty_string_returns_empty(self):
         self.assertEqual(_parse_keywords(""), [])
+
+
+class TestSummarizeEmptyStateMessage(unittest.TestCase):
+    def test_contains_file_and_next_step_guidance(self):
+        message = _summarize_empty_state_message("papers.json")
+        self.assertIn("No papers found to summarize", message)
+        self.assertIn("Checked file: papers.json", message)
+        self.assertIn("paperhunter hunt --keywords", message)
 
 
 class TestBuildParser(unittest.TestCase):
@@ -165,6 +174,26 @@ class TestCmdSummarize(unittest.TestCase):
                 MockSummarizer.return_value.create_summary.return_value = SAMPLE_SUMMARY
                 result = cmd_summarize(args)
             self.assertEqual(result, 0)
+        finally:
+            os.unlink(input_path)
+
+    def test_returns_0_with_empty_input_list(self):
+        import os
+        import tempfile
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False, encoding="utf-8"
+        ) as f:
+            json.dump([], f)
+            input_path = f.name
+        try:
+            args = MagicMock()
+            args.input_json = input_path
+            args.output = None
+            with patch("src.cli.SummarizerAgent") as MockSummarizer:
+                result = cmd_summarize(args)
+            self.assertEqual(result, 0)
+            MockSummarizer.assert_not_called()
         finally:
             os.unlink(input_path)
 
