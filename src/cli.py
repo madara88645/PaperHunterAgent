@@ -41,6 +41,17 @@ def _parse_keywords(raw: str) -> list[str]:
     return [kw.strip() for kw in raw.split(",") if kw.strip()]
 
 
+def _summarize_empty_state_message(input_json: str) -> str:
+    """Build a friendly empty-state hint for summarize command."""
+    return "\n".join(
+        [
+            "📭 No papers found to summarize.",
+            f"Checked file: {input_json}",
+            'Next step: paperhunter hunt --keywords "quantum error correction" --output papers.json',
+        ]
+    )
+
+
 # ---------------------------------------------------------------------------
 # hunt
 # ---------------------------------------------------------------------------
@@ -85,6 +96,10 @@ def cmd_summarize(args: argparse.Namespace) -> int:
     except (FileNotFoundError, json.JSONDecodeError) as exc:
         logger.error("Failed to read input JSON: %s", exc)
         return 1
+
+    if not papers:
+        logger.warning(_summarize_empty_state_message(args.input_json))
+        return 0
 
     summarizer = SummarizerAgent()
     summaries: list[str] = []
