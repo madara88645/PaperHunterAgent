@@ -1,5 +1,7 @@
 # PaperHunterAgent — QuantumResearchChain
 
+![PaperHunterAgent banner](https://github.com/user-attachments/assets/be126b9e-2999-411a-9b48-e7bc4f41d5a7)
+
 > **Automatically discover, summarize, and visually map the latest quantum science papers from arXiv and Semantic Scholar — so you can spend less time searching and more time doing research.**
 
 [![CI](https://github.com/madara88645/PaperHunterAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/madara88645/PaperHunterAgent/actions/workflows/ci.yml)
