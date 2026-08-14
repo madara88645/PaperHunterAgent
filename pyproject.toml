@@ -2,7 +2,7 @@
 name = "paperhunter-agent"
 version = "0.1.0"
 description = "Multi-agent system to hunt, summarize, and map quantum research papers"
-authors = [{name = "Jane Doe", email = "jane@example.com"}]
+authors = [{name = "Mehmet Özel", email = "163588475+madara88645@users.noreply.github.com"}]
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
