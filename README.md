@@ -375,7 +375,7 @@ twine upload dist/*
 ```
 
 **Remaining metadata to add before publishing:**
-- Real author name and email (replace placeholder in `pyproject.toml`)
+- Real author name and email (replace placeholder in `pyproject.toml` ✓)
 - Set `version` following [SemVer](https://semver.org/) (start at `0.1.0` ✓)
 - Verify `license` field and `LICENSE` file are consistent
 
